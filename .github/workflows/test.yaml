@@ -1,4 +1,4 @@
-name: CI
+name: ListingBucket
 
 on:
   push:
@@ -8,11 +8,18 @@ on:
 
 
 jobs:
-  log_message:
+  listing_buckets:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Set up AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{secrets.IAM_PIPELINEROLE}}
+          aws-region: ${{secrets.AWS_REGION}}
 
-      - name: Log message
-        run: echo "Hello, World! debug"
+      - name: List S3 Buckets
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+        run: |
+          echo "Listing all S3 buckets in the account"
+          aws s3 ls
